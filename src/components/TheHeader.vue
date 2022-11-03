@@ -17,6 +17,7 @@
           <router-link to="/sprint">Sprint</router-link>
           <router-link to="/notizen">Notizen</router-link>
           <router-link to="/todos">Todo's</router-link>
+          <router-link to="/user">Project Team</router-link>
         </ul>
       </nav>
     </header>

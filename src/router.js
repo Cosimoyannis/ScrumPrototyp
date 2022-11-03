@@ -6,7 +6,8 @@ import UserNotizen from "@/pages/UserNotizen.vue";
 import SprintStatus from "@/pages/SprintStatus.vue";
 import ProjectPlan from "@/pages/ProjectPlan.vue";
 import OverView from "@/pages/OverView.vue";
-import OverView2 from "@/pages/OverView copy.vue";
+import UserCards from "@/pages/UserCards.vue";
+import UserDetails from "@/components/user/UserDetails.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -18,7 +19,12 @@ const router = createRouter({
     { path: "/sprint", component: SprintStatus },
     { path: "/project", component: ProjectPlan },
     { path: "/overview", component: OverView },
-    { path: "/overview2", component: OverView2 },
+    { path: "/user", component: UserCards },
+    {
+      path: "/user/:id",
+      props: true,
+      component: UserDetails,
+    },
   ],
 });
 

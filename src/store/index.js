@@ -2,10 +2,12 @@ import { createStore } from "vuex";
 
 import todos from "@/store/todos/index.js";
 import notes from "@/store/notizen/index.js";
+import users from "@/store/user/index.js";
 const store = createStore({
   modules: {
     todoModule: todos,
     notizModule: notes,
+    userModule: users,
   },
   state() {
     return {
