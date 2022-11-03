@@ -1,134 +1,147 @@
 <template>
-    <div class="countdown">
-        {{displayDays}} :
-       {{disyplayHours}} :
-       {{displayMinutes}} :
-       {{displaySecounds}}
+    <div class="container">
+      <div class="wrapper">
+        <h1>Countdown</h1>
+        <div class="currentTime">
+          <p class="timestamp" v-if="timeStarted">
+            {{ hours }} : {{ minutes }}: {{ seconds }}
+          </p>
+        </div>
+        <div class="timeWrapper" v-if="!timeStarted">
+          <div class="hours_container">
+            <p id="hours" class="time">Hours</p>
+            <input
+              type="number"
+              id="inputHour"
+              min="0"
+              max="96"
+              class="inputTime"
+              v-model="hours"
+            />
+          </div>
+          <div class="minutes_container">
+            <p id="minutes" class="time">Minutes</p>
+            <input
+              type="number"
+              id="inputMinutes"
+              min="0"
+              max="60"
+              class="inputTime"
+              v-model="minutes"
+            />
+          </div>
+          <div class="seconds_container">
+            <p id="seconds" class="time">Seconds</p>
+            <input
+              type="number"
+              id="inputSeconds"
+              min="0"
+              max="60"
+              class="inputTime"
+              v-model="seconds"
+            />
+          </div>
+        </div>
+        <div class="button_container">
+          <base-button id="start" @click="startCountdown">Start</base-button>
+          <base-button id="stop" @click="stopTimer">Stop</base-button>
+          <base-button id="reset" @click="resetTimer">Reset</base-button>
+        </div>
+      </div>
     </div>
-    <br/>
-    <div class="form">
-        Zu welcher Uhrzeit soll der Timer enden?
-        <br/>
-        <input class="input" type="number" placeholder="Stunden" v-model="inputHours"/>
-        <input class="input" type="number" placeholder="Minuten" v-model="inputMinutes"/>
-        <input class="input" type="number" placeholder="Sekunden" v-model="inputSeconds"/>
-        <button class="btnTimer" type="button" v-on:click="getInput()" >Start</button>
-        <button class="btnTimer" type="button"  >Stopp</button>
-    </div>
-
-    <div>Infos / Bugs:
-        ist der timer gestartet und der user startet anschließend eine neuen timer, dann springt die zeit immer hin und her (beide timer laufen).
-            <br/>
-        <br/>
-        todo:    <br/>
-        - bug (zeit springen beheben)    <br/>
-        - stopp button implementieren    <br/>
-        - timer eingabe eventuell überdenken (nicht uhrzeit als ende des times eingeben, sondern timer soll in 30 minuten enden...)    <br/>
-    </div>
-
-</template>
-
-<script>
-export default {
-    props: ["jahr", "monat", "tag", "stunde", "minute", "sekunde"],
-    data: () => ({
-        displayDays: 0,
-        disyplayHours: 0,
-        displayMinutes: 0,
-        displaySecounds: 0,
-        inputHours: null,
-        inputMinutes: null,
-        inputSeconds: null,
-
-    }),
-    computed: {
-        _secounds: () => 1000,
-        _minutes() {
-            return this._secounds * 60;
-        },
-        _hours() {
-            return this._minutes * 60;
-        },
-        _days() {
-            return this._hours * 24;
-        },
-        end() {
-            return new Date(
-                this.jahr, this.monat, this.tag, this.stunde, this.minute, this.sekunde
-            );
-        },
-    }, mounted() {
-        //this.showReaming()
+  </template>
+  
+  <script>
+  import BaseButton from "@/ui/BaseButton.vue";
+  export default {
+    components: { BaseButton },
+    data() {
+      return {
+        timeStarted: false,
+        startTimer: null,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        isChecked: false,
+      };
     },
     methods: {
-        formatNum: num => (num < 10 ? "0" + num : num),
-        showReaming(Hours, Minutes, Seconds){
-            const timer = setInterval(()=> {
-                const now = new Date();
-                const end = new Date(2022, 9, 30, Hours, Minutes, Seconds);
-                const distance = end.getTime() - now.getTime();
-
-                
-                if(distance < 0){
-                    clearInterval(timer);
-                    return
-                }
-
-                const days = Math.floor((distance / this._days));
-                const hours = Math.floor((distance % this._days) / this._hours);
-                const minutes = Math.floor((distance % this._hours) / this._minutes);
-                const secounds = Math.floor((distance % this._minutes) / this._secounds);
-                this.displayMinutes = this.formatNum(minutes)
-                this.displaySecounds = this.formatNum(secounds)
-                this.disyplayHours = this.formatNum(hours)
-                this.displayDays = this.formatNum(days)
-            }, 1000);
-        },
-        getInput(){
-            //Clear Timer - muss noch implementiert werden (sonst springt der Timer immer zwischen alter und neuer Zeit)
-            //Start Timer
-            this.showReaming(this.inputHours, this.inputMinutes, this.inputSeconds)
-        },
-    }
-}
-</script>
-
-<style>
-.form {
-    position: relative;
-    text-align: center;
-}
-.countdown {
-    background-color: #C5A974;
-    position: relative;
-    text-align: center;
-    height: 15vh;
-    width: 15vh;
-    border-radius: 100px;
-    margin-left: 40%;
-    padding-top: 50px;
-}
-.input {
-    height: 25px;
-    width: 100px;
-    margin: 3px;
-    border: none;
-    background-color: #e7e7e7;
-    color: black;
-}
-.btnTimer {
-  background-color: rgb(37, 32, 32);
-  color: white;
-  border: solid 1px white;
-  cursor: pointer;
-  padding: 10px;
-  width: 60px;
-  border-radius: 4px;
-}
-.btnTimer:hover {
-  border: solid 1px white;
-  background-color: rgb(48, 170, 222);
-  letter-spacing: 2px;
-  border-radius: 10px;
-}
-</style>
+      timer() {
+        this.validation();
+  
+        this.timeStarted = true;
+        if (this.hours == 0 && this.minutes == 0 && this.seconds == 0) {
+          this.hours = 0;
+          this.minutes = 0;
+          this.seconds = 0;
+          this.timeStarted = false;
+          this.stopTimer;
+        } else if (this.seconds != 0) {
+          //seconds.value = seconds.value - 1;
+          this.seconds--;
+        } else if (this.minutes != 0 && this.seconds == 0) {
+          this.seconds = 59;
+          this.minutes--;
+        } else if (this.hours != 0 && this.minutes == 0) {
+          this.minutes = 60;
+          this.hours--;
+        }
+        //  console.log(this.seconds);
+        return;
+      },
+      startCountdown() {
+        this.startTimer = setInterval(() => {
+          this.timer();
+        }, 1000);
+      },
+      resetTimer() {
+        this.hours = 0;
+        this.minutes = 0;
+        this.seconds = 0;
+        this.stopTimer;
+        this.timeStarted = false;
+      },
+      stopTimer() {
+        clearInterval(this.startTimer);
+      },
+      validation() {
+        if (this.minutes > 60) {
+          this.minutes = 60;
+          alert("Es dürfen nicht mehr als 60 Minuten eingetragen werden");
+        }
+        if (this.seconds > 60) {
+          this.seconds = 60;
+          alert("Es dürfen nicht mehr als 60 Sekunden eingetragen werden");
+        }
+        this.isChecked = true;
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  h1 {
+    margin-bottom: 1rem;
+  }
+  .timestamp {
+    font-size: 5rem;
+  }
+  
+  .timeWrapper {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .timeWrapper input {
+    border: 2px solid black;
+    border-radius: 10px;
+    outline: none;
+    padding: 5px 10px;
+    font-size: 1rem;
+  }
+  
+  .button_container {
+    display: flex;
+  }
+  </style>
+  
